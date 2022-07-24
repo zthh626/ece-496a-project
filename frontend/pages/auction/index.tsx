@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useAccount,
   useConnect,
   useDisconnect,
   chain,
   useSendTransaction,
+  useContractRead,
+  erc721ABI,
 } from "wagmi";
 import { data } from "../../data";
 import { InjectedConnector } from "wagmi/connectors/injected";
@@ -12,6 +14,7 @@ import { Bars } from "react-loading-icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
 import { BigNumber } from "ethers";
+import { erc721Abi } from "../../erc721abi";
 
 const Auction = () => {
   const { address, isConnected } = useAccount();
@@ -54,6 +57,17 @@ const Auction = () => {
     newInputValue[i] = val;
     setInputValue(newInputValue);
   }
+
+  const { data: yo } = useContractRead({
+    addressOrName: "0x9F1d984307F1B77F7D9c6FE27472AAbc40aE5683",
+    contractInterface: erc721Abi,
+    functionName: "balanceOf",
+    args: ["0xa65C28fFf3328f99Fe9C7497462D6cebCB83Bec6"],
+  });
+
+  useEffect(() => {
+    console.log(yo);
+  }, [yo]);
 
   const Completionist = () => <span>You are good to go!</span>;
 
