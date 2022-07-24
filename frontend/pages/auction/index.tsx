@@ -1,25 +1,53 @@
-import Confetti from "react-confetti";
 import { useState } from "react";
-import { useAccount, useConnect, useDisconnect, chain } from "wagmi";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  chain,
+  useSendTransaction,
+} from "wagmi";
 import { data } from "../../data";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { Bars } from "react-loading-icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
+import { BigNumber } from "ethers";
 
 const Auction = () => {
   const { address, isConnected } = useAccount();
-  const [isLoading, setIsLoading] = useState(false);
 
   const { connect } = useConnect({
     connector: new InjectedConnector({ chains: [chain.rinkeby] }),
   });
   const { disconnect } = useDisconnect();
   const [inputValue, setInputValue] = useState(["", "", ""]);
+  const [buttonLoading, setButtonLoadind] = useState([false, false, false]);
+  const [submittedBid, setSubmittedBid] = useState([false, false, false]);
 
-  function bidClicked() {
-    console.log("clicked");
-    setIsLoading(true);
+  const sendTransaction = (i: number) =>
+    useSendTransaction({
+      request: {
+        to: "awkweb.eth",
+        value: BigNumber.from("1000000000000000000"), // 1 ETH
+      },
+      onSettled(data, error) {
+        const newButtonLoading = [...buttonLoading];
+        newButtonLoading[i] = false;
+        submittedBid[i] = true;
+        setButtonLoadind(newButtonLoading);
+      },
+    });
+
+  function bidClicked(i: number, val: any) {
+    // if(Date.now() > data.auction.endTime) {
+
+    //   return;
+    // }
+
+    const newButtonLoading = [...buttonLoading];
+    newButtonLoading[i] = true;
+    setButtonLoadind(newButtonLoading);
+    // sendTransaction(i);
   }
   function setInputValueForCar(i: number, val: any) {
     const newInputValue = [...inputValue];
@@ -55,7 +83,6 @@ const Auction = () => {
 
   return (
     <div className="w-full bg-[url('/background.png')] bg-no-repeat bg-top bg-cover">
-      <Confetti width={100} height={100} />
       <div className="flex justify-end p-2">
         {isConnected ? (
           <button
@@ -94,6 +121,12 @@ const Auction = () => {
                   <div className="rounded-lg w-full p-2 bg-gray-900 text-center text-white">
                     Connect wallet to bid
                   </div>
+                ) : submittedBid[i] || Date.now() ? (
+                  <div>
+                    <div className="rounded-lg w-full p-2 bg-gray-900 text-center text-white">
+                      Bidding not allowed
+                    </div>
+                  </div>
                 ) : (
                   <>
                     <input
@@ -104,11 +137,11 @@ const Auction = () => {
                       onChange={(e) => setInputValueForCar(i, e.target.value)}
                     />
                     <button
-                      disabled={isLoading}
-                      onClick={bidClicked}
+                      disabled={buttonLoading[i]}
+                      onClick={(e) => bidClicked(i, true)}
                       className="rounded-lg bg-green-400 w-full p-2 hover:bg-gray-900 hover:text-white flex justify-center"
                     >
-                      {isLoading ? (
+                      {buttonLoading[i] ? (
                         <Bars
                           style={{
                             height: "20px",
