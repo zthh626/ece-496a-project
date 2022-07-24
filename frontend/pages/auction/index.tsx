@@ -17,7 +17,7 @@ const Auction = () => {
     setInputValue(newInputValue);
   }
   return (
-    <div className="w-full bg-[url('/background.svg')] bg-cover bg-center bg-no-repeat bg-fixed">
+    <div className="w-full bg-[url('/background.svg')] bg-no-repeat bg-top bg-cover">
       <div className="flex justify-end p-2">
         {isConnected ? (
           <button
