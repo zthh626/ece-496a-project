@@ -15,6 +15,145 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
 import { BigNumber } from "ethers";
 import { erc721Abi } from "../../erc721abi";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+
+function MyModal() {
+  let [isOpen, setIsOpen] = useState(true);
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 flex items-center justify-center">
+        <button
+          type="button"
+          onClick={openModal}
+          className="rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+        >
+          Open dialog
+        </button>
+      </div>
+
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Enter bid
+                  </Dialog.Title>
+                  <div className="flex justify-center">
+                    <div>
+                      <div className="mb-3 xl:w-96">
+                        <label
+                          htmlFor="exampleFormControlInpu3"
+                          className="form-label inline-block mb-2 text-gray-700"
+                        >
+                          Amount
+                        </label>
+                        <input
+                          type="text"
+                          className="
+          form-control
+          block
+          w-full
+          px-3
+          py-1.5
+          text-base
+          font-normal
+          text-gray-700
+          bg-white bg-clip-padding
+          border border-solid border-gray-300
+          rounded
+          transition
+          ease-in-out
+          m-0
+          focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+        "
+                          id="exampleFormControlInput3"
+                          placeholder="Enter amount"
+                        />
+                      </div>
+                      <div className="mb-3 xl:w-96">
+                        <label
+                          htmlFor="exampleFormControlInpu3"
+                          className="form-label inline-block mb-2 text-gray-700"
+                        >
+                          Nonce
+                        </label>
+                        <input
+                          type="text"
+                          className="
+          form-control
+          block
+          w-full
+          px-3
+          py-1.5
+          text-base
+          font-normal
+          text-gray-700
+          bg-white bg-clip-padding
+          border border-solid border-gray-300
+          rounded
+          transition
+          ease-in-out
+          m-0
+          focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+        "
+                          id="exampleFormControlInput3"
+                          placeholder="Enter nonce"
+                        />
+                      </div>
+                      <div className="flex space-x-2 justify-center">
+                        <button
+                          type="button"
+                          className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </>
+  );
+}
 
 const Auction = () => {
   const { address, isConnected } = useAccount();
@@ -97,6 +236,7 @@ const Auction = () => {
 
   return (
     <div className="w-full bg-[url('/background.png')] bg-no-repeat bg-top bg-cover">
+      <MyModal />
       <div className="flex justify-end p-2">
         {isConnected ? (
           <button
