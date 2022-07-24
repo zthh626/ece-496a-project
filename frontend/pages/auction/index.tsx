@@ -1,4 +1,6 @@
 import { data } from "../../data";
+import Confetti from "react-confetti";
+
 const Auction = () => {
   return (
     <div
@@ -6,6 +8,7 @@ const Auction = () => {
       style={{ backgroundImage: "url('/background.png')" }}
     >
       <div className="w-full p-20 flex flex-wrap min-h-screen">
+        <Confetti width={100} height={100} />
         {data.map((item, i) => (
           <div key={i} className="bg-gray-100 p-5 rounded-lg h-full">
             <img
