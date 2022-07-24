@@ -3,6 +3,8 @@ import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { data } from "../../data";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { chain } from "wagmi";
+import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import Countdown from "react-countdown";
 
 const Auction = () => {
   const { address, isConnected } = useAccount();
@@ -11,13 +13,41 @@ const Auction = () => {
   });
   const { disconnect } = useDisconnect();
   const [inputValue, setInputValue] = useState(["", "", ""]);
+
   function setInputValueForCar(i: number, val: any) {
     const newInputValue = [...inputValue];
     newInputValue[i] = val;
     setInputValue(newInputValue);
   }
+
+  const Completionist = () => <span>You are good to go!</span>;
+
+  const renderer = ({
+    hours,
+    minutes,
+    seconds,
+    completed,
+  }: {
+    hours: any;
+    minutes: any;
+    seconds: any;
+    completed: any;
+  }) => {
+    if (completed) {
+      // Render a completed state
+      return <Completionist />;
+    } else {
+      // Render a countdown
+      return (
+        <span>
+          {hours}:{minutes}:{seconds}
+        </span>
+      );
+    }
+  };
+
   return (
-    <div className="w-full bg-[url('/background.svg')] bg-no-repeat bg-top bg-cover">
+    <div className="w-full bg-[url('/background.png')] bg-no-repeat bg-top bg-cover">
       <div className="flex justify-end p-2">
         {isConnected ? (
           <button
@@ -43,9 +73,14 @@ const Auction = () => {
               alt="item"
               className="w-[350px] h-[275px] rounded-lg"
             />
-            <div className="bg--500 flex-col mt-2 rounded-lg p-2">
-              <div>{item.name}</div>
-              <div>{item.description}</div>
+            <div className="flex-col mt-2 rounded-lg p-2">
+              <div className="bg-blue-400 p-2 font-bold text-center mb-1 rounded-lg flex justify-center">
+                <div>Time left:</div>
+                <Countdown date={Date.now() + 10000} renderer={renderer} />
+              </div>
+              <div className="bg-yellow-200 p-2 font-bold text-center mb-1 rounded-lg">
+                {item.name}
+              </div>
               <div className="flex">
                 {!isConnected ? (
                   <div className="rounded-lg w-full p-2 bg-gray-900 text-center text-white">
