@@ -1,19 +1,28 @@
+
+import Confetti from "react-confetti";
 import { useState } from "react";
 import { useAccount, useConnect, useDisconnect, chain } from "wagmi";
 import { data } from "../../data";
-import Confetti from "react-confetti";
 import { InjectedConnector } from "wagmi/connectors/injected";
+import { chain } from "wagmi";
+import { Bars } from "react-loading-icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
 
 const Auction = () => {
   const { address, isConnected } = useAccount();
+  const [isLoading, setIsLoading] = useState(false);
+
   const { connect } = useConnect({
     connector: new InjectedConnector({ chains: [chain.rinkeby] }),
   });
   const { disconnect } = useDisconnect();
   const [inputValue, setInputValue] = useState(["", "", ""]);
 
+  function bidClicked() {
+    console.log("clicked");
+    setIsLoading(true);
+  }
   function setInputValueForCar(i: number, val: any) {
     const newInputValue = [...inputValue];
     newInputValue[i] = val;
@@ -96,8 +105,24 @@ const Auction = () => {
                       value={inputValue[i]}
                       onChange={(e) => setInputValueForCar(i, e.target.value)}
                     />
-                    <button className="rounded-lg bg-green-400 w-full p-2 hover:bg-gray-900 hover:text-white">
-                      Bid
+                    <button
+                      disabled={isLoading}
+                      onClick={bidClicked}
+                      className="rounded-lg bg-green-400 w-full p-2 hover:bg-gray-900 hover:text-white"
+                    >
+                      {isLoading ? (
+                        <Bars
+                          style={{
+                            height: "20px",
+                            width: "20px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        />
+                      ) : (
+                        "Bid"
+                      )}
                     </button>
                   </>
                 )}
