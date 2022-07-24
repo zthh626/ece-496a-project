@@ -1,3 +1,12 @@
+This project is a Sealed Bid Option Contract. Our application supports anonymous bidding for a set period of time. At the end of the period, the bids are revealed. The user with the highest bid will win the auction and exchange money for the auction prize.
+
+There are three main states of the bidding process: 
+  - Bidding Period: where all bids are made anonymously
+  - Post bidding period: time is up and the bid prices are revealed
+  - Winner is declared: exchanges the bid amount for the bidding item
+
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
