@@ -41,6 +41,7 @@ contract SealedEnvelopeAuction {
         uint256 biddingPeriod,
         uint256 revealingPeriod
     ) public {
+        require(msg.sender == seller);
         require(erc721Contract.ownerOf(tokenId) == address(this));
 
         tokenId = _tokenId;
