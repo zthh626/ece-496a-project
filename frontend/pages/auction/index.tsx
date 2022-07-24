@@ -1,20 +1,19 @@
+import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
+import Countdown from "react-countdown";
+import { Bars } from "react-loading-icons";
 import {
+  chain,
+  erc721ABI,
   useAccount,
   useConnect,
+  useContract,
   useDisconnect,
-  chain,
   useSendTransaction,
-  useContractRead,
-  erc721ABI,
+  useSigner,
 } from "wagmi";
-import { data } from "../../data";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { Bars } from "react-loading-icons";
-import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import Countdown from "react-countdown";
-import { BigNumber } from "ethers";
-import { erc721Abi } from "../../erc721abi";
+import { data } from "../../data";
 
 const Auction = () => {
   const { address, isConnected } = useAccount();
@@ -58,16 +57,20 @@ const Auction = () => {
     setInputValue(newInputValue);
   }
 
-  const { data: yo } = useContractRead({
+  const { data: signer } = useSigner();
+
+  const contract = useContract({
     addressOrName: "0x9F1d984307F1B77F7D9c6FE27472AAbc40aE5683",
-    contractInterface: erc721Abi,
-    functionName: "balanceOf",
-    args: ["0xa65C28fFf3328f99Fe9C7497462D6cebCB83Bec6"],
+    contractInterface: erc721ABI,
+    signerOrProvider: signer,
   });
 
   useEffect(() => {
-    console.log(yo);
-  }, [yo]);
+    contract &&
+      contract.tokenURI(1).then((res: any) => {
+        console.log("ressss", res);
+      });
+  }, [contract]);
 
   const Completionist = () => <span>You are good to go!</span>;
 
