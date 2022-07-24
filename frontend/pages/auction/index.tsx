@@ -1,10 +1,8 @@
-
 import Confetti from "react-confetti";
 import { useState } from "react";
 import { useAccount, useConnect, useDisconnect, chain } from "wagmi";
 import { data } from "../../data";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { chain } from "wagmi";
 import { Bars } from "react-loading-icons";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
@@ -108,16 +106,13 @@ const Auction = () => {
                     <button
                       disabled={isLoading}
                       onClick={bidClicked}
-                      className="rounded-lg bg-green-400 w-full p-2 hover:bg-gray-900 hover:text-white"
+                      className="rounded-lg bg-green-400 w-full p-2 hover:bg-gray-900 hover:text-white flex justify-center"
                     >
                       {isLoading ? (
                         <Bars
                           style={{
                             height: "20px",
                             width: "20px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
                           }}
                         />
                       ) : (
