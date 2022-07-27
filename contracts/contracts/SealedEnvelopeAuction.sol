@@ -3,7 +3,8 @@
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-
+import "hardhat/console.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 contract SealedEnvelopeAuction {
     address seller;
 
@@ -14,6 +15,8 @@ contract SealedEnvelopeAuction {
 
     mapping(address => uint256) public balances;
     mapping(address => bytes32) public hashes;
+    mapping(address => bytes32) public hashCalculated;
+
 
     address highestBidder;
     uint256 highestBid;
@@ -42,7 +45,7 @@ contract SealedEnvelopeAuction {
         uint256 revealingPeriod
     ) public {
         require(msg.sender == seller);
-        require(erc721Contract.ownerOf(tokenId) == address(this));
+        require(erc721Contract.ownerOf(_tokenId) == address(this));
 
         tokenId = _tokenId;
 
@@ -54,24 +57,24 @@ contract SealedEnvelopeAuction {
     }
 
     // The hash is the bid + a nonce
-    function placeHashedBid(bytes32 hash) public payable isAuctionStarted {
+    function placeHashedBid(uint256 amount, uint256 nonce) public payable isAuctionStarted {
         // If the bid is placed after the bidding has ended, throw an error
         require(block.timestamp < endOfBidding, "Bidding has ended");
-
-        // Don't let a user bid twice
-        require(balances[msg.sender] > 0);
-
+        uint256 prehashedValue = amount + nonce;
+        string memory hashedString = Strings.toString(prehashedValue);
+        bytes32 hash = keccak256(abi.encode(hashedString));
         hashes[msg.sender] = hash;
         balances[msg.sender] = msg.value;
     }
 
-    function revealBid(uint256 amount, uint256 nonce) public isAuctionStarted {
+    function revealBid(uint256 amount, uint256 nonce) public isAuctionStarted hasSellerNotWithdraw {
         // hashes the amount and nonce together
         uint256 prehashedValue = amount + nonce;
-        bytes32 hash = keccak256(abi.encode(prehashedValue));
-
+        string memory hashedString = Strings.toString(prehashedValue);
+        bytes32 hash = keccak256(abi.encode(hashedString));
+        hashCalculated[msg.sender] = hash;
         // checks that the user's has and the reveal are the same
-        require(hash == hashes[msg.sender]);
+        require(hashCalculated[msg.sender] == hashes[msg.sender]);
 
         // If the bid is placed after the bidding has ended, throw an error
         require(block.timestamp < endOfRevealing, "Revealing has ended");
@@ -79,6 +82,9 @@ contract SealedEnvelopeAuction {
         if (amount > highestBid) {
             highestBid = amount;
             highestBidder = msg.sender;
+            console.log("You are currently the highest bidder");
+        }else{
+            console.log("You were not the highest bidder");
         }
     }
 
@@ -91,7 +97,7 @@ contract SealedEnvelopeAuction {
 
         erc721Contract.transferFrom(address(this), highestBidder, tokenId);
         payable(seller).transfer(balances[highestBidder]);
-
+        balances[highestBidder] = 0;
         isWithdrawn = true;
     }
 
@@ -114,4 +120,9 @@ contract SealedEnvelopeAuction {
         require(isWithdrawn);
         _;
     }
+    modifier hasSellerNotWithdraw(){
+        require(!isWithdrawn);
+        _;
+    }
 }
+
