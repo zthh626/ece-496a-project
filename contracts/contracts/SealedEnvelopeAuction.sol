@@ -15,7 +15,6 @@ contract SealedEnvelopeAuction {
 
     mapping(address => uint256) public balances;
     mapping(address => bytes32) public hashes;
-    mapping(address => bytes32) public hashCalculated;
 
 
     address highestBidder;
@@ -57,12 +56,8 @@ contract SealedEnvelopeAuction {
     }
 
     // The hash is the bid + a nonce
-    function placeHashedBid(uint256 amount, uint256 nonce) public payable isAuctionStarted {
+    function placeHashedBid(bytes32 hash) public payable isAuctionStarted {
         // If the bid is placed after the bidding has ended, throw an error
-        require(block.timestamp < endOfBidding, "Bidding has ended");
-        uint256 prehashedValue = amount + nonce;
-        string memory hashedString = Strings.toString(prehashedValue);
-        bytes32 hash = keccak256(abi.encode(hashedString));
         hashes[msg.sender] = hash;
         balances[msg.sender] = msg.value;
     }
@@ -72,9 +67,8 @@ contract SealedEnvelopeAuction {
         uint256 prehashedValue = amount + nonce;
         string memory hashedString = Strings.toString(prehashedValue);
         bytes32 hash = keccak256(abi.encode(hashedString));
-        hashCalculated[msg.sender] = hash;
         // checks that the user's has and the reveal are the same
-        require(hashCalculated[msg.sender] == hashes[msg.sender]);
+        require(hash == hashes[msg.sender], "Incorrect amount or nonce found.");
 
         // If the bid is placed after the bidding has ended, throw an error
         require(block.timestamp < endOfRevealing, "Revealing has ended");
@@ -125,4 +119,5 @@ contract SealedEnvelopeAuction {
         _;
     }
 }
+
 
