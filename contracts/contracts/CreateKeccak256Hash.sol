@@ -6,10 +6,10 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 contract CreateKeccak256Hash {
-
+    
+    // A mapping that will store the hash
     mapping(address => bytes32) public hashes;
 
-    // initializes contract with the erc721 contract
     constructor() {}
 
     // The hash is the bid + a nonce
