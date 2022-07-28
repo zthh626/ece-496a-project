@@ -13,7 +13,9 @@ contract SealedEnvelopeAuction {
     uint256 public endOfBidding;
     uint256 public endOfRevealing;
 
+    // Balances of bidders
     mapping(address => uint256) public balances;
+    // Hashed bids of bidders
     mapping(address => bytes32) public hashes;
 
 
@@ -46,6 +48,7 @@ contract SealedEnvelopeAuction {
         require(msg.sender == seller);
         require(erc721Contract.ownerOf(_tokenId) == address(this));
 
+        // A token id that is being auctioned
         tokenId = _tokenId;
 
         // starts the auction
@@ -67,7 +70,7 @@ contract SealedEnvelopeAuction {
         uint256 prehashedValue = amount + nonce;
         string memory hashedString = Strings.toString(prehashedValue);
         bytes32 hash = keccak256(abi.encode(hashedString));
-        // checks that the user's has and the reveal are the same
+        // checks that the user's hash and the reveal are the same
         require(hash == hashes[msg.sender], "Incorrect amount or nonce found.");
 
         // If the bid is placed after the bidding has ended, throw an error
@@ -89,8 +92,12 @@ contract SealedEnvelopeAuction {
         // only withdraw after the revealing is finshed
         require(block.timestamp > endOfRevealing, "Revealing has not finished");
 
+        // Transfer the auctioned NFT to the highestBidder
         erc721Contract.transferFrom(address(this), highestBidder, tokenId);
+        
+        // Transfer the highest bid to the seller
         payable(seller).transfer(balances[highestBidder]);
+        
         balances[highestBidder] = 0;
         isWithdrawn = true;
     }
